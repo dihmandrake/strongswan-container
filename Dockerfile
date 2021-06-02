@@ -35,8 +35,10 @@ COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
 RUN set -eux \
     && apt-get update \
-    # Enforce latest openssl version & install libcurl-dev, libldap2-dev
-    && apt-get install --upgrade -y libssl-dev gperf \
+    # Enforce latest openssl version
+    && apt-get install --upgrade -y libssl-dev \
+    # Build requirements for StrongSwan
+        bison flex gperf \
     && cd "/strongswan-src" \
     && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH} -mtune=${GCC_MTUNE}" \
     && export LDFLAGS="--static -pthread" \
