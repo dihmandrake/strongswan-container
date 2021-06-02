@@ -8,6 +8,18 @@ ARG STRONGSWAN_VERSION="5.9.2"
 ARG ROOT_FOLDER_STRUCTURE="/strongswan"
 
 
+FROM gcc:11.1.0 as strongswan-configure
+
+COPY strongswan "/strongswan-src"
+
+RUN set -eux \
+    && apt-get update \
+    # Requirments for the autogen.sh
+    && apt-get install -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
+    && cd "/strongswan-src" \
+    && ./autogen.sh
+
+
 FROM gcc:11.1.0 as strongswan-build
 
 ARG STRONGSWAN_PREFIX
@@ -19,16 +31,13 @@ ARG STRONGSWAN_PID_DIR
 ARG GCC_MARCH="silvermont"
 ARG GCC_MTUNE="silvermont"
 
-COPY strongswan "/strongswan-src"
+COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
 RUN set -eux \
     && apt-get update \
-    # Requirments for the autogen.sh
-    && apt-get install -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
-    && cd "/strongswan-src" \
-    && ./autogen.sh \
     # Enforce latest openssl version & install libcurl-dev, libldap2-dev
-    && apt-get install --upgrade -y libssl-dev \
+    && apt-get install --upgrade -y libssl-dev gperf \
+    && cd "/strongswan-src" \
     && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH} -mtune=${GCC_MTUNE}" \
     && export LDFLAGS="--static -pthread" \
     && ./configure \
@@ -63,7 +72,8 @@ RUN set -eux \
         # Enable security plugins
         --enable-addrblock --enable-duplicheck \
         # Enable EAP plugins \
-        --enable-eap-radius --enable-eap-identity --enable-eap-dynamic \
+        --enable-eap-radius \
+        #--enable-eap-identity --enable-eap-dynamic \
         # Enable network plugins
         --enable-farp --enable-dhcp --enable-ha \
         # TODO Look into --enable-forecast: Might be required for WOL
