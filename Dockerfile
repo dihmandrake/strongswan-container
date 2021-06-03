@@ -3,9 +3,9 @@ ARG STRONGSWAN_SYS_CONF_DIR="/etc/strongswan"
 ARG STRONGSWAN_LIBEXEC_DIR="/usr/libexec"
 ARG STRONGSWAN_IPSEC_DIR="/usr/libexec/ipsec"
 ARG STRONGSWAN_PID_DIR="/var/run"
-ARG STRONGSWAN_VERSION="5.9.2"
 
 ARG ROOT_FOLDER_STRUCTURE="/strongswan"
+
 
 
 FROM gcc:11.1.0 as strongswan-configure
@@ -20,7 +20,7 @@ RUN set -eux \
     && ./autogen.sh
 
 
-FROM gcc:11.1.0 as strongswan-build
+FROM alpine:3.13.5 as strongswan-build
 
 ARG STRONGSWAN_PREFIX
 ARG STRONGSWAN_SYS_CONF_DIR
@@ -34,14 +34,24 @@ ARG GCC_MTUNE="silvermont"
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
 RUN set -eux \
-    && apt-get update \
-    # Enforce latest openssl version
-    && apt-get install --upgrade -y libssl-dev \
-    # Build requirements for StrongSwan
+    # Alpine basic compile packages
+    && apk add --no-cache build-base musl-dev \
+        # Alpine libssl (OpenSSL)
+        openssl-dev openssl-libs-static \
+        # Basic build requirements for StrongSwan (same as on Debian)
         bison flex gperf \
+        # Additional packages on Alpine
+        linux-headers python3 gmp-dev gettext-dev automake autoconf libtool \
+        # Curl dependencies to fetch CRLs via HTTP
+        curl-dev curl-static nghttp2-dev nghttp2-static zlib-dev zlib-static brotli-dev brotli-static \
     && cd "/strongswan-src" \
-    && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH} -mtune=${GCC_MTUNE}" \
-    && export LDFLAGS="--static -pthread" \
+    # For libcurl $(pkg-config --libs --static libcurl) is not working due to broken brotli references https://github.com/google/brotli/issues/795
+    && LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec-static -lbrotlicommon-static -lz" \
+        && export LIBS="-L/usr/lib/** -L/lib/** -L/usr/include/** ${LIBCURL_WORKAROUND_LIBS}" \
+    && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
+        && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH} -mtune=${GCC_MTUNE} ${CFLAGS_SECURITY}" \
+    && LDFLAGS_SECURITY="-Wl,-z,relro -Wl,-z,now" \ 
+        && export LDFLAGS="--static -pthread -Bstatic ${LDFLAGS_SECURITY}" \
     && ./configure \
         # Internal paths
         --prefix="${STRONGSWAN_PREFIX}" \
@@ -52,8 +62,8 @@ RUN set -eux \
         #--with-resolv-conf=/etc/resolv.conf \
         --with-piddir="${STRONGSWAN_PID_DIR}" \
         --with-ipsecdir="${STRONGSWAN_IPSEC_DIR}" \
-        #--libdir=PREFIX/lib \
-        #--with-ipseclibdir=LIBDIR/ipsec \
+        #--libdir="${STRONGSWAN_LIB_DIR}" \
+        #--with-ipseclibdir="${STRONGSWAN_IPSEC_LIB_DIR}" \
         # For static compile
         --disable-shared --enable-static --enable-monolithic \
         # Reduce priviliges of the daemon; TODO validate option
@@ -61,16 +71,11 @@ RUN set -eux \
         # Disable all options and enable on demand; Crypto is based on OpenSSL and not in-tree
         --disable-defaults \
         # Enable default requirements
-        --enable-charon --enable-ikev2 --enable-kernel-netlink --enable-nonce --enable-swanctl --enable-socket-default --enable-vici --enable-updown \
-        # Enable certficiate and key handeling
-        #--enable-attr --enable-pem --enable-pubkey --enable-revocation \
-        #--enable-pgp --enable-pkcs1 --enable-pkcs7 --enable-pkcs8 --enable-pkcs12 \
-        # Enable crl fetchers; Currently broken for static compile curl and openldap
-        #--enable-curl --enable-ldap \
-        #--enable-files \
-        # OpenSSL for crypto; # TODO Validate aes-ni and sha-ni (At least the instructions are compiled in)
+        --enable-charon --enable-ikev2 --enable-kernel-netlink --enable-nonce --enable-swanctl --enable-socket-default --enable-updown --enable-vici \
+        # OpenSSL for crypto & certficiate and key handeling; # TODO Validate aes-ni and sha-ni (At least the instructions are compiled in)
         --enable-openssl \
-        #--enable-af-alg \
+        # Enable CRL fetching plugins; LDAP compilation is a pain for now; '--enable-files' not required as provided by curl as well
+        --enable-curl \
         # Enable security plugins
         --enable-addrblock --enable-duplicheck \
         # Enable EAP plugins \
@@ -80,15 +85,12 @@ RUN set -eux \
         --enable-farp --enable-dhcp --enable-ha \
         # TODO Look into --enable-forecast: Might be required for WOL
         # TODO Look into --enable-connmark for correct connection setup
+        || cat config.log \
     && make -j "$(nproc)" install
 
 
-# Not for crypto plugins
-# Enable some crypto plugins
-#--enable-aesni --enable-chapoly --enable-gcm --enable-sha3 \
 
-
-FROM busybox:stable as folder-structure
+FROM busybox:stable-musl as folder-structure
 
 ARG STRONGSWAN_PREFIX
 ARG STRONGSWAN_SYS_CONF_DIR
@@ -97,6 +99,7 @@ ARG STRONGSWAN_PID_DIR
 ARG ROOT_FOLDER_STRUCTURE
 
 #COPY --from=strongswan-build /usr/lib/ipsec ${ROOT_FOLDER_STRUCTURE}/usr/lib/ipsec # Libs are not required in the image
+#COPY --from=strongswan-build "${STRONGSWAN_IPSEC_LIB_DIR}" "${ROOT_FOLDER_STRUCTURE}/${STRONGSWAN_IPSEC_DIR}"
 COPY --from=strongswan-build "${STRONGSWAN_IPSEC_DIR}" "${ROOT_FOLDER_STRUCTURE}/${STRONGSWAN_IPSEC_DIR}"
 COPY --from=strongswan-build "${STRONGSWAN_PREFIX}/sbin/swanctl" "${ROOT_FOLDER_STRUCTURE}/${STRONGSWAN_PREFIX}/sbin/swanctl"
 COPY --from=strongswan-build "${STRONGSWAN_SYS_CONF_DIR}" "${ROOT_FOLDER_STRUCTURE}/${STRONGSWAN_SYS_CONF_DIR}"
@@ -129,8 +132,8 @@ COPY --from=folder-structure "${ROOT_FOLDER_STRUCTURE}" "/"
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD [ "swanctl", "--stats" ]
-EXPOSE 500/udp
-EXPOSE 4500/udp
+EXPOSE 500/udp \
+    4500/udp
 
 #USER 20001:20001
 
