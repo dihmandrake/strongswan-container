@@ -6,6 +6,9 @@ on:
     - cron:  '0 4 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   Update-all-submodules:
     runs-on: ubuntu-latest
@@ -15,13 +18,9 @@ jobs:
         persist-credentials: false
         fetch-depth: 0
         submodules: true
-    - name: Configure git
-      run: |
-        git config --global user.name "Jasper Bernhardt"
-        git config --global user.email "jasper.bernhardt@live.de"
     - name: Update submodules
       run: |
         git submodule foreach '../.ci/update-to-latest-git-tag.sh'
     - name: Commit & Push if changed
       run: |
-        git commit -am "Update submodules" && git push || true
+        if git commit -am "Update submodules"; then git push; fi
