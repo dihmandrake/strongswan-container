@@ -18,6 +18,10 @@ jobs:
         persist-credentials: false
         fetch-depth: 0
         submodules: true
+    - name: Configure git
+      run: |
+        git config --global user.name "Jasper Bernhardt"
+        git config --global user.email "jasper.bernhardt@live.de"
     - name: Update submodules
       run: |
         git submodule foreach '../.ci/update-to-latest-git-tag.sh'
