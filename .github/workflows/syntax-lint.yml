@@ -1,0 +1,16 @@
+name: Syntax & Lint
+
+on: [push]
+
+jobs:
+  Super-Linter:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - name: GitHub Super Linter
+      uses: github/super-linter@v4.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
