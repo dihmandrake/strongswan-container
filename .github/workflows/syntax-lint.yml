@@ -1,3 +1,4 @@
+---
 name: Syntax & Lint
 
 on: [push]
