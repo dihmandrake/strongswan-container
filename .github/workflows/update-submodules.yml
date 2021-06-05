@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  gitlab:
+  Update-all-submodules:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2.3.4
