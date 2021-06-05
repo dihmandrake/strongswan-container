@@ -1,0 +1,27 @@
+name: Update git submodules
+
+on:
+  schedule:
+    - cron:  '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  gitlab:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+        submodules: true
+    - name: Configure git
+      run: |
+        git config --global user.name "Jasper Bernhardt"
+        git config --global user.email "jasper.bernhardt@live.de"
+    - name: Update submodules
+      run: |
+        git submodule foreach '../.ci/update-to-latest-git-tag.sh'
+    - name: Commit & Push if changed
+      run: |
+        git commit -am "Update submodules"
+        git push
