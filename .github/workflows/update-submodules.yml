@@ -23,5 +23,4 @@ jobs:
         git submodule foreach '../.ci/update-to-latest-git-tag.sh'
     - name: Commit & Push if changed
       run: |
-        git commit -am "Update submodules"
-        git push
+        git commit -am "Update submodules" && git push || true
