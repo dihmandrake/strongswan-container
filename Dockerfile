@@ -18,7 +18,9 @@ RUN set -eux \
     # Requirments for the autogen.sh
     && apt-get install -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
     && cd "/strongswan-src" \
-    && ./autogen.sh
+    && ./autogen.sh \
+    &&  && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 
 FROM alpine:3.13.5 as strongswan-build
@@ -132,8 +134,7 @@ ENV PATH=/bin:/usr/sbin:/sbin:${STRONGSWAN_IPSEC_DIR}
 
 COPY --from=folder-structure "${ROOT_FOLDER_STRUCTURE}" "/"
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD [ "swanctl", "--stats" ]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD [ "swanctl", "--stats" ]
 EXPOSE 500/udp \
     4500/udp
 
