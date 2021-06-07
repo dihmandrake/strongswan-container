@@ -3,6 +3,9 @@ name: Syntax & Lint
 
 on: [push]
 
+permissions:
+  statuses: write
+
 jobs:
   Super-Linter:
     runs-on: ubuntu-latest
