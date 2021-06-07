@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   Update-all-submodules:
@@ -20,14 +21,41 @@ jobs:
         persist-credentials: false
         fetch-depth: 0
         submodules: true
-    - name: Configure git
-      run: |
-        git config --global user.name "Jasper Bernhardt"
-        git config --global user.email "jasper.bernhardt@live.de"
-        git remote set-url --push origin "https://dihmandrake:$GITHUB_TOKEN@github.com/dihmandrake/strongswan-container"
-    - name: Update submodules
+    #- name: Configure git
+    #  run: |
+    #    git config --global user.name "Jasper Bernhardt"
+    #    git config --global user.email "jasper.bernhardt@live.de"
+    #    git remote set-url --push origin "https://dihmandrake:$GITHUB_TOKEN@github.com/dihmandrake/strongswan-container"
+    - name: Update Submodules
       run: |
         git submodule foreach '../.ci/update-to-latest-git-tag.sh'
-    - name: Commit & Push if changed
-      run: |
-        if git commit -am "Update submodules"; then git push; fi
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        #token: ${{ secrets.PAT }}
+        commit-message: Update Submodules
+        #committer: GitHub <noreply@github.com>
+        #author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        #signoff: false
+        branch: ci/update-submodules
+        delete-branch: true
+        title: 'Update Submodules'
+        body: |
+          Update Submodules
+          
+          Check commits for details.
+        labels: |
+          submodules
+          github_actions
+          dependencies
+        assignees: dihmandrake
+        reviewers: dihmandrake
+        #team-reviewers: |
+        #  owners
+        #  maintainers
+        #milestone: 1
+        draft: false
+    #- name: Commit & Push if changed
+    #  run: |
+    #    if git commit -am "Update submodules"; then git push; fi
