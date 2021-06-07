@@ -4,7 +4,7 @@ name: Syntax & Lint
 on: [push]
 
 permissions:
-  content: read
+  contents: read
   statuses: write
 
 jobs:
