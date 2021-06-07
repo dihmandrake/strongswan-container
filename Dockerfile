@@ -135,7 +135,6 @@ ENV PATH=/bin:/usr/sbin:/sbin:${STRONGSWAN_IPSEC_DIR}
 
 COPY --from=folder-structure "${ROOT_FOLDER_STRUCTURE}" "/"
 
-# hadolint ignore=*
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD "swanctl" "--stats"
 EXPOSE 500/udp \
