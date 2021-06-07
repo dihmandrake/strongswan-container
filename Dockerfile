@@ -12,14 +12,14 @@ FROM gcc:11.1.0 as strongswan-configure
 
 COPY strongswan "/strongswan-src"
 
-# hadolint ignore=DL3003,DL3008,DL3015
+# hadolint ignore=DL3003,DL3008
 RUN set -eux \
     && apt-get update \
     # Requirments for the autogen.sh
-    && apt-get install -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
+    && apt-get install --no-install-recommends -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
     && cd "/strongswan-src" \
     && ./autogen.sh \
-    &&  && apt-get clean \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -38,8 +38,9 @@ COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
 # hadolint ignore=DL3003,DL3018
 RUN set -eux \
-    # Alpine basic compile packages
-    && apk add --no-cache build-base musl-dev \
+    && apk add --no-cache \
+        # Alpine basic compile packages
+        build-base musl-dev \
         # Alpine libssl (OpenSSL)
         openssl-dev openssl-libs-static \
         # Basic build requirements for StrongSwan (same as on Debian)
@@ -134,7 +135,8 @@ ENV PATH=/bin:/usr/sbin:/sbin:${STRONGSWAN_IPSEC_DIR}
 
 COPY --from=folder-structure "${ROOT_FOLDER_STRUCTURE}" "/"
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD [ "swanctl", "--stats" ]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD "swanctl" "--stats"
 EXPOSE 500/udp \
     4500/udp
 

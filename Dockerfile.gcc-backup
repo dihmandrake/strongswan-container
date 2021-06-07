@@ -165,13 +165,15 @@ FROM gcc:11.1.0 as strongswan-configure
 
 COPY strongswan "/strongswan-src"
 
-# hadolint ignore=DL3003,DL3008,DL3015
+# hadolint ignore=DL3003,DL3008
 RUN set -eux \
     && apt-get update \
     # Requirments for the autogen.sh
-    && apt-get install -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
+    && apt-get install --no-install-recommends -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
     && cd "/strongswan-src" \
-    && ./autogen.sh
+    && ./autogen.sh \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 
 FROM dihmandrake/gcc-static-nss:11.1.0 as strongswan-build
@@ -190,11 +192,11 @@ ARG GCC_MTUNE="silvermont"
 #COPY --from=gcc "/" "/"
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
-# hadolint ignore=DL3003,DL3008,DL3015
+# hadolint ignore=DL3003,DL3008
 RUN set -eux \
     && apt-get update \
     # Enforce latest openssl version
-    && apt-get install --upgrade -y libssl-dev \
+    && apt-get install --no-install-recommends --upgrade -y libssl-dev \
     # Build requirements for StrongSwan
         bison flex gperf \
     && cd "/strongswan-src" \
@@ -290,9 +292,9 @@ ENV PATH=/bin:/usr/sbin:/sbin:${STRONGSWAN_IPSEC_DIR}
 COPY --from=folder-structure "${ROOT_FOLDER_STRUCTURE}" "/"
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD [ "swanctl", "--stats" ]
-EXPOSE 500/udp
-EXPOSE 4500/udp
+    CMD "swanctl" "--stats"
+EXPOSE 500/udp \
+    4500/udp
 
 #USER 20001:20001
 
