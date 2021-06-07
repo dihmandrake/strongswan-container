@@ -165,6 +165,7 @@ FROM gcc:11.1.0 as strongswan-configure
 
 COPY strongswan "/strongswan-src"
 
+# hadolint ignore=DL3003,DL3008,DL3015
 RUN set -eux \
     && apt-get update \
     # Requirments for the autogen.sh
@@ -189,6 +190,7 @@ ARG GCC_MTUNE="silvermont"
 #COPY --from=gcc "/" "/"
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
+# hadolint ignore=DL3003,DL3008,DL3015
 RUN set -eux \
     && apt-get update \
     # Enforce latest openssl version

@@ -12,6 +12,7 @@ FROM gcc:11.1.0 as strongswan-configure
 
 COPY strongswan "/strongswan-src"
 
+# hadolint ignore=DL3003,DL3008,DL3015
 RUN set -eux \
     && apt-get update \
     # Requirments for the autogen.sh
@@ -33,6 +34,7 @@ ARG GCC_MTUNE="silvermont"
 
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
+# hadolint ignore=DL3003,DL3018
 RUN set -eux \
     # Alpine basic compile packages
     && apk add --no-cache build-base musl-dev \
