@@ -20,4 +20,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VALIDATE_DOCKERFILE: false  # To many false positives and issues
-        VALIDATE_DOCKERFILE_HADOLINT: true  # Explicitly enabled to show Dockerfile linting
+        #VALIDATE_DOCKERFILE_HADOLINT: true  # Explicitly enabled to show Dockerfile linting;
