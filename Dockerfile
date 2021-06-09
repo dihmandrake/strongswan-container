@@ -64,9 +64,9 @@ RUN set -eux \
         && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
                 export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_AMD64_FLAGS}"; \
             elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_ARMV7_FLAGS}" \
+                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_ARMV7_FLAGS}"; \
             elif [ "$TARGETPLATFORM" = "linux/arm/v8" ] || [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$TARGETPLATFORM" = "linux/arm64/v8" ]; then \
-                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_ARMV8_FLAGS}" \
+                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_ARMV8_FLAGS}"; \
             else \
                 export GCC_CPU_OPTIMIZE_FLAGS=""; \
             fi \
