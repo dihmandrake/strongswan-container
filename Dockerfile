@@ -87,7 +87,9 @@ RUN set -eux \
         --enable-eap-radius \
         #--enable-eap-identity --enable-eap-dynamic \
         # Enable network plugins
-        --enable-farp --enable-dhcp --enable-ha \
+        --enable-farp --enable-dhcp \
+        # HA is not enabled for now as it requires a patched kernel
+        #--enable-ha \
         # TODO Look into --enable-forecast: Might be required for WOL
         # TODO Look into --enable-connmark for correct connection setup
         || cat config.log \
