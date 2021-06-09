@@ -25,15 +25,21 @@ RUN set -eux \
 
 FROM alpine:3.13.5 as strongswan-build
 
+ARG TARGETPLATFORM
+
 ARG STRONGSWAN_PREFIX
 ARG STRONGSWAN_SYS_CONF_DIR
 ARG STRONGSWAN_LIBEXEC_DIR
 ARG STRONGSWAN_IPSEC_DIR
 ARG STRONGSWAN_PID_DIR
 
-ARG GCC_MARCH_AMD64="silvermont"
-ARG GCC_MTUNE_AMD64="silvermont"
-ARG TARGETPLATFORM
+
+ARG GCC_OPTIMIZE_AMD64_FLAGS="-march=silvermont -mtune=generic"
+# Info for ARM gcc flags https://gist.github.com/fm4dd/c663217935dc17f0fc73c9c81b0aa845
+# Flags are based on the RPi2
+ARG GCC_OPTIMIZE_ARMV7_FLAGS="-mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -mtune=cortex-a7"
+# Flags are based on the RPi3 + mtune for RPi4. The crypto extension are enabled
+ARG GCC_OPTIMIZE_ARMV8_FLAGS="-mcpu=cortex-a53+crypto -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits -mtune=cortex-a72"
 
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
@@ -55,9 +61,14 @@ RUN set -eux \
     && LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec-static -lbrotlicommon-static -lz" \
         && export LIBS="-L/usr/lib/** -L/lib/** -L/usr/include/** ${LIBCURL_WORKAROUND_LIBS}" \
     && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
-        && if [ "$TARGETPLATFORM" = "linux/amd64" ]; \
-                then export GCC_CPU_OPTIMIZE_FLAGS="-march=${GCC_MARCH_AMD64} -mtune=${GCC_MTUNE_AMD64}"; \
-            else export GCC_CPU_OPTIMIZE_FLAGS=""; \
+        && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_AMD64_FLAGS}"; \
+            elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_ARMV7_FLAGS}" \
+            elif [ "$TARGETPLATFORM" = "linux/arm/v8" ] || [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$TARGETPLATFORM" = "linux/arm64/v8" ]; then \
+                export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_ARMV8_FLAGS}" \
+            else \
+                export GCC_CPU_OPTIMIZE_FLAGS=""; \
             fi \
         && export CFLAGS="-O2 -pipe -static ${GCC_CPU_OPTIMIZE_FLAGS} ${CFLAGS_SECURITY}" \
     && LDFLAGS_SECURITY="-Wl,-z,relro -Wl,-z,now" \ 
