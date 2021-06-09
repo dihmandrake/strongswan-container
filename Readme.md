@@ -6,7 +6,7 @@ Dynamic linking does not actually provide any real advantages inside a container
 
 It uses [musl-libc](https://www.musl-libc.org/) and not [glibc](https://www.gnu.org/software/libc/), because glibc always requires dynamic linking for NSS. It is at least used for the function `getaddrinfo()`, which takes care of DNS/Name resolution. Musl handles this function without any dynamic linking.
 
-New versions are automatically pulled in via [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and created as a new Pull Request with a nightly [GitHub Action](.github/workflows/update-submodules.yml).
+New versions are automatically pulled in via [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and created as a new Pull Request with a nightly [GitHub Action](.github/workflows/update-submodules.yml). Container updates are manged via [Dependabot](.github/dependabot.yml).
 
 All cipher suites are based on OpenSSL and all in-tree crypto is disabled for security reasons. The enabled plugins can be found in the [Dockerfile](./Dockerfile) and compiler flags as well.
 
@@ -46,3 +46,4 @@ Notes for things that need optimization:
 * Look into running the container as non-root.
 * Properly set tags for images in the format of `strongswanVersion-alpineVersion`, for example, `5.9.2-3.13.5`.
 * Properly tag and release the repo repository instead of updating on any commit on the main branch.
+* Push the image to alternative container repos (GitHub & Quay).
