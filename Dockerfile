@@ -33,6 +33,7 @@ ARG STRONGSWAN_PID_DIR
 
 ARG GCC_MARCH="silvermont"
 ARG GCC_MTUNE="silvermont"
+ARG TARGETPLATFORM
 
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
@@ -54,7 +55,11 @@ RUN set -eux \
     && LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec-static -lbrotlicommon-static -lz" \
         && export LIBS="-L/usr/lib/** -L/lib/** -L/usr/include/** ${LIBCURL_WORKAROUND_LIBS}" \
     && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
-        && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH} -mtune=${GCC_MTUNE} ${CFLAGS_SECURITY}" \
+        && if [ "$TARGETPLATFORM" == "linux/amd64" ]; \
+                then export GCC_CPU_OPTIMIZE_FLAGS="-march=${GCC_MARCH} -mtune=${GCC_MTUNE}"; \
+            else export GCC_CPU_OPTIMIZE_FLAGS=""; \
+            fi \
+        && export CFLAGS="-O2 -pipe -static ${GCC_CPU_OPTIMIZE_FLAGS} ${CFLAGS_SECURITY}" \
     && LDFLAGS_SECURITY="-Wl,-z,relro -Wl,-z,now" \ 
         && export LDFLAGS="--static -pthread -Bstatic ${LDFLAGS_SECURITY}" \
     && ./configure \
