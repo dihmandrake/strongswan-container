@@ -186,8 +186,8 @@ ARG STRONGSWAN_IPSEC_DIR
 #ARG STRONGSWAN_IPSEC_LIB_DIR
 ARG STRONGSWAN_PID_DIR
 
-ARG GCC_MARCH="silvermont"
-ARG GCC_MTUNE="silvermont"
+ARG GCC_MARCH_AMD64="silvermont"
+ARG GCC_MTUNE_AMD64="silvermont"
 
 #COPY --from=gcc "/" "/"
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
@@ -204,7 +204,7 @@ RUN set -eux \
     && cd "/strongswan-src" \
     # TODO Require flags for static nss for name resolution with getaddrinfo()
     && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
-    && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH} -mtune=${GCC_MTUNE} ${CFLAGS_SECURITY}" \
+    && export CFLAGS="-O2 -pipe -static -march=${GCC_MARCH_AMD64} -mtune=${GCC_MTUNE_AMD64} ${CFLAGS_SECURITY}" \
     && LDFLAGS_SECURITY="-Wl,-z,relro -Wl,-z,now" \ 
     && export LDFLAGS="--static -pthread -Bstatic ${LDFLAGS_SECURITY}" \
     && ./configure \
