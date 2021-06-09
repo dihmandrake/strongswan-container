@@ -37,11 +37,11 @@ ARG STRONGSWAN_PID_DIR
 ARG GCC_OPTIMIZE_AMD64_FLAGS="-march=silvermont -mtune=generic"
 # Info for ARM gcc flags https://gist.github.com/fm4dd/c663217935dc17f0fc73c9c81b0aa845; Currently issues with some flags as they are not recognized by the compiler
 # Flags are based on the RPi2
-#ARG GCC_OPTIMIZE_ARMV7_FLAGS="-mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -mtune=cortex-a7"
-ARG GCC_OPTIMIZE_ARMV7_FLAGS="-mcpu=cortex-a7 -mtune=cortex-a7"
-# Flags are based on the RPi3 + mtune for RPi4. The crypto extension are enabled
-#ARG GCC_OPTIMIZE_ARMV8_FLAGS="-mcpu=cortex-a53+crypto -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits -mtune=cortex-a72"
-ARG GCC_OPTIMIZE_ARMV8_FLAGS="-mcpu=cortex-a53+crypto -mtune=cortex-a72+crypto"
+#ARG GCC_OPTIMIZE_ARMV7_FLAGS="-mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4"
+ARG GCC_OPTIMIZE_ARMV7_FLAGS="-mcpu=cortex-a7"
+# Flags are based on the RPi3. The crypto extension are enabled
+#ARG GCC_OPTIMIZE_ARMV8_FLAGS="-mcpu=cortex-a53+crypto -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits"
+ARG GCC_OPTIMIZE_ARMV8_FLAGS="-mcpu=cortex-a53+crypto"
 
 COPY --from=strongswan-configure "/strongswan-src" "/strongswan-src"
 
