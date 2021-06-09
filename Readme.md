@@ -2,11 +2,11 @@
 
 This container is a statically, monolithic compiled version of [StrongSwan](https://github.com/strongswan/strongswan) from the source. The executables are copied into a scratch container within one layer.
 
-Dynamic linking does not actually provide any real advantages inside a container. Linking in itself provides not many advantages, as pointed out by Linus Torvalds in the [mailing list](https://lore.kernel.org/lkml/CAHk-=whs8QZf3YnifdLv57+FhBi5_WeNTG1B-suOES=RcUSmQg@mail.gmail.com/).
+Static linking is used as dynamic linking does not actually provide any real advantages inside a container. Linking in itself provides not many advantages, as pointed out by Linus Torvalds in the [mailing list](https://lore.kernel.org/lkml/CAHk-=whs8QZf3YnifdLv57+FhBi5_WeNTG1B-suOES=RcUSmQg@mail.gmail.com/).
 
 It uses [musl-libc](https://www.musl-libc.org/) and not [glibc](https://www.gnu.org/software/libc/), because glibc always requires dynamic linking for NSS. It is at least used for the function `getaddrinfo()`, which takes care of DNS/Name resolution. Musl handles this function without any dynamic linking.
 
-New versions are automatically pulled in via [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and created as a new Pull Request with a nightly [GitHub Action](.github/workflows/update-submodules.yml). Container updates are manged via [Dependabot](.github/dependabot.yml).
+New StrongSwan versions are automatically pulled in via [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and created as a new Pull Request with a nightly [GitHub Action](.github/workflows/update-submodules.yml). Container updates are manged via [Dependabot](.github/dependabot.yml).
 
 All cipher suites are based on OpenSSL and all in-tree crypto is disabled for security reasons. The enabled plugins can be found in the [Dockerfile](./Dockerfile) and compiler flags as well.
 
@@ -23,7 +23,7 @@ $ docker run --rm \
     --read-only \
     --tmpfs /var/run \
     --tty \
-    -v my/strongswan-conf:/etc/strongswan/swanctl/conf.d:ro
+    -v my/strongswan-conf:/etc/strongswan/swanctl/conf.d:ro \
     dihmandrake/strongswan
 ```
 
