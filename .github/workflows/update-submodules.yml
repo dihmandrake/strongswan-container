@@ -1,5 +1,5 @@
 ---
-name: Update git submodules
+name: Update Git Submodules
 
 on:
   schedule:
@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  Update-all-submodules:
+  Update-all-Submodules:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -31,9 +31,9 @@ jobs:
         commit-message: Update Submodules
         branch: ci/update-submodules
         delete-branch: true
-        title: 'Update Submodules'
+        title: 'Update Git Submodules'
         body: |
-          Update Submodules
+          Update Git Submodules
           
           Check commits for details.
         labels: |
