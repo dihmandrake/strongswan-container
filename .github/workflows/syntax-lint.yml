@@ -1,5 +1,5 @@
 ---
-name: Syntax & Lint
+name: "Syntax and Lint"
 
 on: [push]
 
