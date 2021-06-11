@@ -42,7 +42,7 @@ Notes for things that need optimization:
 
 * Validate output of `swanctl --list-algs` after build to confirm only OpenSSL-based ciphers are loaded and no in-tree crypto.
 * Validate that container can start after a new build.
-* Look into better hardening with compiler flags.
+* Look into better hardening with compiler flags. Maybe [OWASP compiler flags](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html) are helpful.
 * Look into running the container as non-root.
 * Properly set tags for images in the format of `strongswanVersion-alpineVersion`, for example, `5.9.2-3.13.5`.
 * Properly tag and release the repo repository instead of updating on any commit on the main branch.
