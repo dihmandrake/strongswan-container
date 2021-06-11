@@ -18,6 +18,13 @@ jobs:
         with:
           persist-credentials: false
           submodules: true
+      - name: Setup Cache for Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.platform }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.platform }}-
       - name: Set up QEMU for Multi Arch builds
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx for Multi Arch builds
@@ -32,5 +39,7 @@ jobs:
         with:
           push: true
           platforms: ${{ matrix.platform }}
-          tags: "${{ secrets.DOCKER_USERNAME }}/strongswan:latest\
+          tags: "${{ secrets.DOCKER_USERNAME }}/strongswan:latest
             ,${{ secrets.DOCKER_USERNAME }}/strongswan:${{ github.sha }}"
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
