@@ -1,0 +1,8 @@
+# Ignore all git stuff (including GitHub)
+.git?
+
+# Ignore CI
+.ci?
+
+# Ignore root info files
+Readme.md
