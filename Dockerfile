@@ -94,7 +94,7 @@ RUN set -eux \
         # Disable all options and enable on demand; Crypto is based on OpenSSL and not in-tree
         --disable-defaults \
         # Enable default requirements
-        --enable-charon --enable-ikev2 --enable-kernel-netlink --enable-nonce --enable-swanctl --enable-socket-default --enable-updown --enable-vici \
+        --enable-attr --enable-charon --enable-ikev2 --enable-kernel-netlink --enable-nonce --enable-swanctl --enable-socket-default --enable-updown --enable-vici \
         # OpenSSL for crypto & certficiate and key handeling; # TODO Validate aes-ni and sha-ni (At least the instructions are compiled in)
         --enable-openssl \
         # Enable CRL fetching plugins; LDAP compilation is a pain for now; '--enable-files' not required as provided by curl as well
@@ -102,10 +102,12 @@ RUN set -eux \
         # Enable security plugins
         --enable-addrblock --enable-duplicheck \
         # Enable EAP plugins \
-        --enable-eap-radius \
+        --enable-eap-radius --enable-radattr \
         #--enable-eap-identity --enable-eap-dynamic \
         # Enable network plugins
         --enable-farp --enable-dhcp \
+        # Test vectors for crypto \
+        --enable-test-vectors \
         # HA is not enabled for now as it requires a patched kernel
         #--enable-ha \
         # TODO Look into --enable-forecast: Might be required for WOL
@@ -144,7 +146,7 @@ RUN set -eux \
     && cp "/bin/cat" "${ROOT_FOLDER_STRUCTURE}/bin/cat" \
     && cp "/bin/ls" "${ROOT_FOLDER_STRUCTURE}/bin/ls"
 
-COPY "strongswan-config/charon-logging.conf" "${ROOT_FOLDER_STRUCTURE}/${STRONGSWAN_SYS_CONF_DIR}/strongswan.d/charon-logging.conf"
+COPY "strongswan-config/strongswan.d" "${ROOT_FOLDER_STRUCTURE}/${STRONGSWAN_SYS_CONF_DIR}/strongswan.d"
 
 
 FROM scratch
