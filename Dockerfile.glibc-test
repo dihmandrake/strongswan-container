@@ -1,5 +1,8 @@
 FROM gcc:11.1.0 as glibc
 
+# More notes for flags export LDFLAGS"=-nodefaultlibs -static -I/tmp/glibc-out-shared/include -L/tmp/glibc-out-shared/lib -I/usr/local/lib/gcc/x86_64-linux-gnu/11.1.0/include -L/usr/local/lib/gcc/x86_64-linux-gnu/11.1.0/ -Wl,--rpath=/tmp/glibc-out-shared/lib -Wl,--dynamic-linker=/tmp/glibc-out-shared/lib/ld-linux-x86-64.so.2 -lgcc -lc -lgcc_eh --static -pthread -Bstatic -static"
+
+# hadolint ignore=DL3003,DL3008
 RUN set -eux \
     && apt-get update \
     && apt-get install --no-install-recommends -y gawk bison \
@@ -9,17 +12,17 @@ RUN set -eux \
     && mkdir /tmp/glibc-out \
     && cd /tmp/glibc-compile \
     # First need to be compile with shared. Otherwise the '--disabled-shared' fails
-    && ../glibc/configure --prefix=/tmp/glibc-out \
+    && ../glibc/configure --prefix=/usr \
         --enable-static-nss --disable-build-nscd --disable-nscd \
 #        --disable-shared \
         --disable-werror \
         --enable-stack-protector=all \
         --enable-kernel=5.4 \
     && make -j "$(nproc)" \
-    && make install -j "$(nproc)" \
+    && make install -j "$(nproc)" DESTDIR=/tmp/glibc-out \
     # And then removing everything again. Understand this
     #&& rm -rf /tmp/glibc-out/* \
-    #&& ../glibc/configure --prefix=/tmp/glibc-out \
+    #&& ../glibc/configure --prefix=/tmp/glibc-out-static \
     #    --enable-static-nss  --disable-build-nscd --disable-nscd \
     #    --disable-shared \
     #    --disable-werror \
