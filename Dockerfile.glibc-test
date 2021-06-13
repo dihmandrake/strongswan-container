@@ -1,0 +1,30 @@
+FROM gcc:11.1.0 as glibc
+
+RUN set -eux \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y gawk bison \
+    && cd /tmp \
+    && git clone --depth=1 --branch glibc-2.33 https://sourceware.org/git/glibc.git \
+    && mkdir /tmp/glibc-compile \
+    && mkdir /tmp/glibc-out \
+    && cd /tmp/glibc-compile \
+    # First need to be compile with shared. Otherwise the '--disabled-shared' fails
+    && ../glibc/configure --prefix=/tmp/glibc-out \
+        --enable-static-nss --disable-build-nscd --disable-nscd \
+#        --disable-shared \
+        --disable-werror \
+        --enable-stack-protector=all \
+        --enable-kernel=5.4 \
+    && make -j "$(nproc)" \
+    && make install -j "$(nproc)" \
+    # And then removing everything again. Understand this
+    #&& rm -rf /tmp/glibc-out/* \
+    #&& ../glibc/configure --prefix=/tmp/glibc-out \
+    #    --enable-static-nss  --disable-build-nscd --disable-nscd \
+    #    --disable-shared \
+    #    --disable-werror \
+    #    --enable-stack-protector=all \
+    #    # TODO validate if this flag has an effect
+    #    --enable-kernel=5.4 \
+    #&& make -j "$(nproc)" \
+    #&& make install -j "$(nproc)"

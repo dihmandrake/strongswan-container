@@ -1,0 +1,13 @@
+diff --git a/nss/nss_module.c b/nss/nss_module.c
+index 6c5f341f..06d46c35 100644
+--- a/nss/nss_module.c
++++ b/nss/nss_module.c
+@@ -188,7 +188,7 @@ module_load (struct nss_module *module)
+ #endif
+    }
+
+-# ifdef USE_NSCD
++# if defined USE_NSCD && (!defined DO_STATIC_NSS || defined SHARED)
+  if (is_nscd)
+    {
+       /* Call the init function when nscd is used.  */
