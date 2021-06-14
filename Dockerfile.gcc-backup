@@ -8,9 +8,9 @@ ARG STRONGSWAN_PID_DIR="/var/run"
 
 ARG ROOT_FOLDER_STRUCTURE="/strongswan"
 
-# hadolint ignore=DL3003,DL3008
 FROM gcc:11.1.0 as glibc
 
+# hadolint ignore=DL3003,DL3008
 RUN set -eux \
     && apt-get update \
         && apt-get install --no-install-recommends -y gawk bison \
