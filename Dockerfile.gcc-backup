@@ -8,7 +8,7 @@ ARG STRONGSWAN_PID_DIR="/var/run"
 
 ARG ROOT_FOLDER_STRUCTURE="/strongswan"
 
-
+# hadolint ignore=DL3003,DL3008
 FROM gcc:11.1.0 as glibc
 
 RUN set -eux \
