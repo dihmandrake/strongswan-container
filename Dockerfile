@@ -60,7 +60,10 @@ RUN set -eux \
         curl-dev curl-static nghttp2-dev nghttp2-static zlib-dev zlib-static brotli-dev brotli-static \
     && cd "/strongswan-src" \
     # For libcurl $(pkg-config --libs --static libcurl) is not working due to broken brotli references https://github.com/google/brotli/issues/795
-    && LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec-static -lbrotlicommon-static -lz" \
+    # For Alpine < 3.14 use the following:
+    #&& LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec-static -lbrotlicommon-static -lz" \
+    # For Alpine >= 3.14 use the following:
+    && LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec -lbrotlicommon -lz" \
         && export LIBS="-L/usr/lib/** -L/lib/** -L/usr/include/** ${LIBCURL_WORKAROUND_LIBS}" \
     && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
         && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
