@@ -105,7 +105,7 @@ RUN set -eux \
         # Enable security plugins
         --enable-addrblock --enable-duplicheck \
         # Enable EAP plugins \
-        --enable-eap-radius --enable-radattr \
+        --enable-eap-radius --enable-eap-identity --enable-radattr \
         #--enable-eap-identity --enable-eap-dynamic \
         # Enable network plugins
         --enable-farp --enable-dhcp \
