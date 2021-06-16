@@ -96,7 +96,7 @@ RUN set -eux \
         # Enable default requirements
         --enable-attr --enable-charon --enable-ikev2 --enable-kernel-netlink --enable-nonce --enable-swanctl --enable-socket-default --enable-updown --enable-vici \
         # OpenSSL for crypto & certficiate and key handeling; # TODO Validate aes-ni and sha-ni (At least the instructions are compiled in)
-        --enable-openssl \
+        --enable-openssl --enable-pem \
         # Enable CRL fetching plugins; LDAP compilation is a pain for now; '--enable-files' not required as provided by curl as well
         --enable-curl \
         # Enable security plugins
