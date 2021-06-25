@@ -109,8 +109,8 @@ RUN set -eux \
         #--enable-eap-identity --enable-eap-dynamic \
         # Enable network plugins
         --enable-farp --enable-dhcp \
-        # Test vectors for crypto \
-        --enable-test-vectors \
+        # Test vectors for crypto; Disable for now as it tests every vector on every swanctl command (e.g. healthcheck) \
+        #--enable-test-vectors \
         # HA is not enabled for now as it requires a patched kernel
         #--enable-ha \
         # TODO Look into --enable-forecast: Might be required for WOL
