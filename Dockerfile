@@ -8,7 +8,7 @@ ARG ROOT_FOLDER_STRUCTURE="/strongswan"
 
 
 
-FROM gcc:11.1.0 as strongswan-configure
+FROM gcc:11.2.0 as strongswan-configure
 
 COPY strongswan "/strongswan-src"
 
