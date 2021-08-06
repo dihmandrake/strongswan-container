@@ -143,7 +143,7 @@ RUN set -eux \
     # Utils that are likely required for basic scripting
     && mkdir -p "${ROOT_FOLDER_STRUCTURE}/bin" \
     && cp "/bin/sh" "${ROOT_FOLDER_STRUCTURE}/bin/sh" \
-    && cp "/bin/sh" "${ROOT_FOLDER_STRUCTURE}/bin/sleep" \
+    && cp "/bin/sleep" "${ROOT_FOLDER_STRUCTURE}/bin/sleep" \
     && cp "/bin/ip" "${ROOT_FOLDER_STRUCTURE}/bin/ip" \
     && cp "/bin/iproute" "${ROOT_FOLDER_STRUCTURE}/bin/iproute" \
     && cp "/bin/cat" "${ROOT_FOLDER_STRUCTURE}/bin/cat" \
