@@ -27,7 +27,7 @@ jobs:
       }}
     steps:
       - name: Approve Changes and Merge changes if label 'dependencies' is set
-        uses: actions/github-script@v4.1
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
