@@ -32,7 +32,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             var labelNames = await github.paginate(
-              github.issues.listLabelsOnIssue,
+              github.rest.issues.listLabelsOnIssue,
               {
                 repo: context.repo.repo,
                 owner: context.repo.owner,
@@ -48,7 +48,7 @@ jobs:
             if (labelNames.includes('dependencies')) {
               console.log('Found label');
 
-              await github.pulls.createReview({
+              await github.rest.pulls.createReview({
                 repo: context.repo.repo,
                 owner: context.repo.owner,
                 pull_number: context.payload.workflow_run.pull_requests[0].number,
@@ -56,7 +56,7 @@ jobs:
               });
               console.log('Approved PR');
 
-              await github.pulls.merge({
+              await github.rest.pulls.merge({
                 repo: context.repo.repo,
                 owner: context.repo.owner,
                 pull_number: context.payload.workflow_run.pull_requests[0].number,
