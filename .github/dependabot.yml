@@ -1,19 +1,19 @@
 ---
 version: 2
 updates:
-- package-ecosystem: github-actions
-  directory: "/"
-  schedule:
-    interval: daily
-  reviewers:
-  - dihmandrake
-  assignees:
-  - dihmandrake
-- package-ecosystem: docker
-  directory: "/"
-  schedule:
-    interval: daily
-  reviewers:
-  - dihmandrake
-  assignees:
-  - dihmandrake
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    reviewers:
+      - dihmandrake
+    assignees:
+      - dihmandrake
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: daily
+    reviewers:
+      - dihmandrake
+    assignees:
+      - dihmandrake

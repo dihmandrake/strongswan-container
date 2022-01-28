@@ -3,7 +3,7 @@ name: Update Git Submodules
 
 on:
   schedule:
-    - cron:  '0 4 * * *'
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -16,30 +16,30 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v2.3.4
-      with:
-        persist-credentials: false
-        fetch-depth: 0
-        submodules: true
-    - name: Update Submodules
-      run: |
-        git submodule foreach '../.ci/update-to-latest-git-tag.sh'
-    - name: Create Pull Request
-      id: cpr
-      uses: peter-evans/create-pull-request@v3
-      with:
-        commit-message: Update Submodules
-        branch: ci/update-submodules
-        delete-branch: true
-        title: 'Update Git Submodules'
-        body: |
-          Update Git Submodules
-          
-          Check commits for details.
-        labels: |
-          submodules
-          github_actions
-          dependencies
-        assignees: dihmandrake
-        reviewers: dihmandrake
-        draft: false
+      - uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          submodules: true
+      - name: Update Submodules
+        run: |
+          git submodule foreach '../.ci/update-to-latest-git-tag.sh'
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Update Submodules
+          branch: ci/update-submodules
+          delete-branch: true
+          title: 'Update Git Submodules'
+          body: |
+            Update Git Submodules
+
+            Check commits for details.
+          labels: |
+            submodules
+            github_actions
+            dependencies
+          assignees: dihmandrake
+          reviewers: dihmandrake
+          draft: false
