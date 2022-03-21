@@ -16,7 +16,7 @@ jobs:
           persist-credentials: false
           submodules: true
       - name: Setup Cache for Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -59,7 +59,7 @@ jobs:
 #          persist-credentials: false
 #          submodules: true
 #      - name: Setup Cache for Docker layers
-#        uses: actions/cache@v2
+#        uses: actions/cache@v3
 #        with:
 #          path: /tmp/.buildx-cache
 #          key: ${{ runner.os }}-buildx-${{ matrix.platform }}-${{ github.sha }}
