@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-buildx-
         if: ${{ github.event.repository.default_branch == github.ref_name }}
       - name: Set up QEMU for Multi Arch builds
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx for Multi Arch builds
         uses: docker/setup-buildx-action@v1
       - name: Log in to Docker Hub
@@ -66,7 +66,7 @@ jobs:
 #          restore-keys: |
 #            ${{ runner.os }}-buildx-${{ matrix.platform }}-
 #      - name: Set up QEMU for Multi Arch builds
-#        uses: docker/setup-qemu-action@v1
+#        uses: docker/setup-qemu-action@v2
 #      - name: Set up Docker Buildx for Multi Arch builds
 #        uses: docker/setup-buildx-action@v1
 #      - name: Log in to Docker Hub
