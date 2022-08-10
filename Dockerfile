@@ -23,7 +23,7 @@ RUN set -eux \
     && ./autogen.sh
 
 
-FROM alpine:3.16.1 as strongswan-build
+FROM alpine:3.16.2 as strongswan-build
 
 ARG TARGETPLATFORM
 
