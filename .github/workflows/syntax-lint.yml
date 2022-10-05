@@ -16,7 +16,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - name: GitHub Super Linter
-        uses: github/super-linter@v4.9.6
+        uses: github/super-linter@v4.9.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_DOCKERFILE: false  # To many false positives and issues
