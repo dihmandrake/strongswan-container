@@ -65,7 +65,8 @@ RUN set -eux \
     # For Alpine >= 3.14 use the following:
     && LIBCURL_WORKAROUND_LIBS="-lcurl -lnghttp2 -lssl -lcrypto -lssl -lcrypto -lbrotlidec -lbrotlicommon -lz" \
         && export LIBS="-L/usr/lib/** -L/lib/** -L/usr/include/** ${LIBCURL_WORKAROUND_LIBS}" \
-    && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
+#    && CFLAGS_SECURITY="-fPIE -fstack-protector-strong -Wstack-protector --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
+    && CFLAGS_SECURITY="-fPIE -fstack-protector-strong --param ssp-buffer-size=4 -fstack-clash-protection -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security" \
         && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
                 export GCC_CPU_OPTIMIZE_FLAGS="${GCC_OPTIMIZE_AMD64_FLAGS}"; \
             elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
