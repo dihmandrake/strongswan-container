@@ -46,5 +46,5 @@ Notes for things that need optimization:
 * Look into running the container as non-root.
 * Properly set tags for images in the format of `strongswanVersion-alpineVersion`, for example, `5.9.2-3.13.5`.
 * Properly tag and release the repository instead of updating on any commit on the main branch.
-* Push the image to alternative container registries (GitHub & Quay).
+* ~~Push the image to alternative container registries (GitHub & Quay).~~
 * Compile dependencies of StrongSwan from source to enable more compiler optimizations. Most important: OpenSSL, musl-libc and curl
