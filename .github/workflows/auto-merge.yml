@@ -30,9 +30,9 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Enable auto-merge for PR
-        run: gh pr merge --auto --delete-branch --merge
+        run: gh pr merge --auto --delete-branch --merge "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
+          PR_URL: ${{ github.event.pull_request.html_url} }
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   owner-auto-approve:
