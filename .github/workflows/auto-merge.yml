@@ -25,7 +25,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Approve PR
-        run: gh pr review --approve "$PR_URL" --body "Auto Approve PR via Action as the Pull Request was opended by dependabot" "$PR_URL"
+        run: gh pr review --approve --body "Auto Approve PR via Action as the Pull Request was opended by dependabot" "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
