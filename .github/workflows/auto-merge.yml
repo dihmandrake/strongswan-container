@@ -1,67 +1,47 @@
 ---
-name: "Pull Request Auto Merge"
-
+name: Auto Merge
 on:
-  workflow_run:
-    workflows: ["Syntax and Lint"]
+  pull_request_target:
+    # Explictly state the default types we want to act upon
     types:
-      - completed
+      - opened
+      - reopened
+      - synchronize
 
 permissions:
-  contents: write
   pull-requests: write
+  contents: write
 
 jobs:
-  Dependabot-Automerge:
+  dependabot-auto-merge:
+    name: Dependabot Auto Merge
     runs-on: ubuntu-latest
-    # Contains workaround to execute if dependabot updates the PR by checking for the base branch in the linked PR
-    # The the github.event.workflow_run.event value is 'push' and not 'pull_request'
-    if: >-
-      ${{
-      github.event.workflow_run.conclusion == 'success'
-      && github.actor == 'dependabot[bot]'
-      && github.event.sender.login == 'dependabot[bot]'
-      && github.event.sender.type == 'Bot'
-      && (github.event.workflow_run.event == 'pull_request'
-          || (github.event.workflow_run.event == 'push' && github.event.workflow_run.pull_requests[0].base.ref == github.event.repository.default_branch ))
-      }}
+    if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-      - name: Approve Changes and Merge changes if label 'dependencies' is set
-        uses: actions/github-script@v6
+      # Keeping the metadata here as it validates the commit signature
+      - name: Dependabot Metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1.3.5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            var labelNames = await github.paginate(
-              github.rest.issues.listLabelsOnIssue,
-              {
-                repo: context.repo.repo,
-                owner: context.repo.owner,
-                issue_number: context.payload.workflow_run.pull_requests[0].number,
-              },
-              (response) => response.data.map(
-                (label) => label.name
-              )
-            );
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Approve PR
+        run: gh pr review --approve "$PR_URL" --body "Auto Approve PR via Action as the Pull Request was opended by dependabot" "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Enable auto-merge for PR
+        run: gh pr merge --auto --delete-branch --merge
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            console.log(labelNames);
-
-            if (labelNames.includes('dependencies')) {
-              console.log('Found label');
-
-              await github.rest.pulls.createReview({
-                repo: context.repo.repo,
-                owner: context.repo.owner,
-                pull_number: context.payload.workflow_run.pull_requests[0].number,
-                event: 'APPROVE'
-              });
-              console.log('Approved PR');
-
-              await github.rest.pulls.merge({
-                repo: context.repo.repo,
-                owner: context.repo.owner,
-                pull_number: context.payload.workflow_run.pull_requests[0].number,
-              });
-
-              console.log('Merged PR');
-            }
-            
+  owner-auto-approve:
+    name: Repo owner auto approve
+    runs-on: ubuntu-latest
+    if: ${{ github.actor_id == github.repository_owner_id }}
+    steps:
+      - name: Approve PR
+        run: gh pr review --approve --body "Auto Approve PR via Action as the Pull Request was opended by the repository owner" "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
