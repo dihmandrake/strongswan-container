@@ -20,4 +20,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_DOCKERFILE: false  # To many false positives and issues
+          VALIDATE_GITHUB_ACTIONS: false # Has a false positive due to missing github.actor_id recongnition
           #VALIDATE_DOCKERFILE_HADOLINT: true  # Explicitly enabled to show Dockerfile linting;
