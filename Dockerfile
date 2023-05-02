@@ -16,7 +16,7 @@ COPY strongswan "/strongswan-src"
 RUN set -eux \
     && apt-get update \
     # Requirments for the autogen.sh
-    && apt-get install --no-install-recommends -y automake autoconf libtool pkg-config gettext perl python flex bison gperf \
+    && apt-get install --no-install-recommends -y automake autoconf libtool pkg-config gettext perl python3 flex bison gperf \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && cd "/strongswan-src" \
