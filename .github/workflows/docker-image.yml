@@ -26,7 +26,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx
       - name: Set up QEMU for Multi Arch builds
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx for Multi Arch builds and Caching
         uses: docker/setup-buildx-action@v3
 
@@ -78,7 +78,7 @@ jobs:
 #          restore-keys: |
 #            ${{ runner.os }}-buildx-${{ matrix.platform }}-
 #      - name: Set up QEMU for Multi Arch builds
-#        uses: docker/setup-qemu-action@v2
+#        uses: docker/setup-qemu-action@v3
 #      - name: Set up Docker Buildx for Multi Arch builds
 #        uses: docker/setup-buildx-action@v3
 #      - name: Log in to Docker Hub
